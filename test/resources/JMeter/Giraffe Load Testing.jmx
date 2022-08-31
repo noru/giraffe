@@ -1,0 +1,1292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="2.8" jmeter="2.13 r1665067">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Giraffe Load Testing" enabled="true">
+      <stringProp name="TestPlan.comments"></stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+        <stringProp name="HTTPSampler.domain">localhost</stringProp>
+        <stringProp name="HTTPSampler.port">9000</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+        <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        <stringProp name="HTTPSampler.protocol">http</stringProp>
+        <stringProp name="HTTPSampler.contentEncoding">utf8</stringProp>
+        <stringProp name="HTTPSampler.path"></stringProp>
+        <stringProp name="HTTPSampler.concurrentPool">4</stringProp>
+      </ConfigTestElement>
+      <hashTree/>
+      <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+        <collectionProp name="HeaderManager.headers">
+          <elementProp name="" elementType="Header">
+            <stringProp name="Header.name">Content-Type</stringProp>
+            <stringProp name="Header.value">application/json</stringProp>
+          </elementProp>
+        </collectionProp>
+      </HeaderManager>
+      <hashTree/>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1451441872000</longProp>
+        <longProp name="ThreadGroup.end_time">1451441872000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get all apps" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain"></stringProp>
+          <stringProp name="HTTPSampler.port"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/apps</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <boolProp name="HTTPSampler.monitor">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="set up" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">import java.util.*;
+
+bsh.shared.count = 0;
+
+allId = new ArrayList();
+
+bsh.shared.allId = allId;</stringProp>
+          </BeanShellPreProcessor>
+          <hashTree/>
+          <RegexExtractor guiclass="RegexExtractorGui" testclass="RegexExtractor" testname="regex for id" enabled="true">
+            <stringProp name="RegexExtractor.useHeaders">false</stringProp>
+            <stringProp name="RegexExtractor.refname">app_id</stringProp>
+            <stringProp name="RegexExtractor.regex">&quot;id&quot;:([0-9]+),&quot;title&quot;</stringProp>
+            <stringProp name="RegexExtractor.template">$1$</stringProp>
+            <stringProp name="RegexExtractor.default"></stringProp>
+            <stringProp name="RegexExtractor.match_number">-1</stringProp>
+          </RegexExtractor>
+          <hashTree/>
+          <BeanShellPostProcessor guiclass="TestBeanGUI" testclass="BeanShellPostProcessor" testname="extract all Id" enabled="true">
+            <stringProp name="filename"></stringProp>
+            <stringProp name="parameters"></stringProp>
+            <boolProp name="resetInterpreter">false</boolProp>
+            <stringProp name="script">int count = Integer.parseInt(vars.get(&quot;app_id_matchNr&quot;));
+bsh.shared.count = count;
+
+for(int i=1;i&lt;=count;i++) { 
+ bsh.shared.allId.add(vars.get(&quot;app_id_&quot; + i));
+}</stringProp>
+          </BeanShellPostProcessor>
+          <hashTree/>
+          <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="setup result" enabled="false">
+            <boolProp name="ResultCollector.error_logging">false</boolProp>
+            <objProp>
+              <name>saveConfig</name>
+              <value class="SampleSaveConfiguration">
+                <time>true</time>
+                <latency>true</latency>
+                <timestamp>true</timestamp>
+                <success>true</success>
+                <label>true</label>
+                <code>true</code>
+                <message>true</message>
+                <threadName>true</threadName>
+                <dataType>true</dataType>
+                <encoding>false</encoding>
+                <assertions>true</assertions>
+                <subresults>true</subresults>
+                <responseData>false</responseData>
+                <samplerData>false</samplerData>
+                <xml>false</xml>
+                <fieldNames>false</fieldNames>
+                <responseHeaders>false</responseHeaders>
+                <requestHeaders>false</requestHeaders>
+                <responseDataOnError>false</responseDataOnError>
+                <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+                <assertionsResultsToSave>0</assertionsResultsToSave>
+                <bytes>true</bytes>
+                <threadCounts>true</threadCounts>
+              </value>
+            </objProp>
+            <stringProp name="filename"></stringProp>
+          </ResultCollector>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Viewers" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">20</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">200</stringProp>
+        <longProp name="ThreadGroup.start_time">1451441866000</longProp>
+        <longProp name="ThreadGroup.end_time">1451441866000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </LoopController>
+        <hashTree>
+          <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="single query" enabled="true">
+            <intProp name="ThroughputController.style">1</intProp>
+            <boolProp name="ThroughputController.perThread">true</boolProp>
+            <intProp name="ThroughputController.maxThroughput">1</intProp>
+            <FloatProperty>
+              <name>ThroughputController.percentThroughput</name>
+              <value>60.0</value>
+              <savedValue>0.0</savedValue>
+            </FloatProperty>
+          </ThroughputController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get app by id" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${random_app_id}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="get random id" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">int max = bsh.shared.count;
+int index = Math.random() * max;
+String random_id = bsh.shared.allId.get(index);
+vars.put(&quot;random_app_id&quot;, random_id);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get app comments" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/comments?appId=${random_app_id}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+          <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="dynamic query" enabled="true">
+            <intProp name="ThroughputController.style">1</intProp>
+            <boolProp name="ThroughputController.perThread">true</boolProp>
+            <intProp name="ThroughputController.maxThroughput">1</intProp>
+            <FloatProperty>
+              <name>ThroughputController.percentThroughput</name>
+              <value>39.0</value>
+              <savedValue>0.0</savedValue>
+            </FloatProperty>
+          </ThroughputController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get collection" enabled="true">
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+                <collectionProp name="Arguments.arguments"/>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps?skip=${__Random(0, 1000)}&amp;top=${__Random(10, 50)}${filterString}</stringProp>
+              <stringProp name="HTTPSampler.method">GET</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="set up filter" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">String filterPrefix = &quot;&amp;filter=&quot;;
+List filters = new ArrayList();
+String delimiter = &quot;,&quot;;
+
+List idList = new ArrayList();
+int count = Math.random() * 50 + 10;
+StringBuffer sb = new StringBuffer();
+for(int i=1;i&lt;=count;i++) { 
+	int idx = Math.random() * bsh.shared.count;
+ 	String id = bsh.shared.allId.get(idx);
+ 	sb.append(id);
+ 	if (i == count){
+ 		break;
+ 	} else {
+ 		sb.append(delimiter);
+ 	}
+}
+String id = &quot;id in (&quot; + sb.toString() + &quot;)&quot;;
+String author = &quot;authorId eq &apos;someonelikeyou&apos;&quot;;
+String prod = &quot;$productLine eq &apos;ACD&apos;&quot;;
+String cat = &quot;$category eq &apos;ACD___Materials&apos;&quot;;
+String title = &quot;title eq &apos;good app&apos;&quot;;
+
+filters.add(id);
+filters.add(author);
+filters.add(prod);
+filters.add(cat);
+filters.add(title);
+
+int random = Math.random() * filters.size();
+filter = filterPrefix + filters.get(random);
+vars.put(&quot;filterString&quot;, filter);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+          <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="Leave comment" enabled="true">
+            <intProp name="ThroughputController.style">1</intProp>
+            <boolProp name="ThroughputController.perThread">true</boolProp>
+            <intProp name="ThroughputController.maxThroughput">1</intProp>
+            <FloatProperty>
+              <name>ThroughputController.percentThroughput</name>
+              <value>10.0</value>
+              <savedValue>0.0</savedValue>
+            </FloatProperty>
+          </ThroughputController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create comment" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+    &quot;appId&quot;: ${random_app_id},&#xd;
+    &quot;author&quot;: &quot;1&quot;,&#xd;
+    &quot;title&quot;: &quot;title title title&quot;,&#xd;
+    &quot;text&quot;: &quot;test oh this app sucks how come someone let it published????&quot;&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/comments</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="get a id" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">int max = bsh.shared.count;
+int index = Math.random() * max;
+String random_id = bsh.shared.allId.get(index);
+vars.put(&quot;random_app_id&quot;, random_id);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+          </hashTree>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="interval" enabled="true">
+            <stringProp name="ConstantTimer.delay">300</stringProp>
+          </ConstantTimer>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="Viewer Results " enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Publishers" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">5</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">50</stringProp>
+        <longProp name="ThreadGroup.start_time">1451446129000</longProp>
+        <longProp name="ThreadGroup.end_time">1451446129000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </LoopController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create app" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+  &quot;title&quot;: &quot;I have a new app&quot;,&#xd;
+  &quot;author&quot;: &quot;1&quot;,&#xd;
+  &quot;icon&quot;: &quot;google.com/logo.jpg&quot;,&#xd;
+  &quot;facets&quot;: [&#xd;
+    { &quot;name&quot;: &quot;productLine&quot;,&#xd;
+      &quot;values&quot;: [&quot;ACD&quot;, &quot;RVT&quot;]&#xd;
+    },&#xd;
+    { &quot;name&quot;: &quot;version&quot;,&#xd;
+      &quot;values&quot;: [&quot;2012&quot;, &quot;2013&quot;]&#xd;
+    },&#xd;
+    { &quot;name&quot;: &quot;category&quot;,&#xd;
+      &quot;values&quot;: [&quot;mechanic&quot;, &quot;architecture&quot;]&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;pricePlans&quot;: [&#xd;
+    {&#xd;
+      &quot;type&quot;: &quot;one_time&quot;,&#xd;
+      &quot;totalPrice&quot;: 0,&#xd;
+      &quot;unitPrice&quot;: 0,&#xd;
+      &quot;discount&quot;: 0,&#xd;
+      &quot;currency&quot;: &quot;USD&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="extract app id from result" enabled="true">
+              <stringProp name="VAR">app_id</stringProp>
+              <stringProp name="JSONPATH">id</stringProp>
+              <stringProp name="DEFAULT"></stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+          </hashTree>
+          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="update app" enabled="true">
+            <boolProp name="LoopController.continue_forever">true</boolProp>
+            <stringProp name="LoopController.loops">9</stringProp>
+          </LoopController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="update an app" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+  &quot;author&quot;: &quot;1&quot;,&#xd;
+  &quot;icon&quot;: &quot;google.com/logo.jpg&quot;,&#xd;
+  &quot;iconSize&quot;: 123,&#xd;
+  &quot;iconMime&quot;: &quot;image/jpg&quot;,&#xd;
+  &quot;updateAt&quot;: &quot;2015-11-09T04:37:53.441Z&quot;,&#xd;
+  &quot;facets&quot;: [&#xd;
+    { &quot;name&quot;: &quot;productLine&quot;,&#xd;
+      &quot;values&quot;: [&quot;ACD&quot;, &quot;RVT&quot;]&#xd;
+    },&#xd;
+    { &quot;name&quot;: &quot;version&quot;,&#xd;
+      &quot;values&quot;: [&quot;2012&quot;, &quot;2013&quot;]&#xd;
+    },&#xd;
+    { &quot;name&quot;: &quot;category&quot;,&#xd;
+      &quot;values&quot;: [&quot;mechanic&quot;, &quot;architecture&quot;]&#xd;
+    }&#xd;
+  ],&#xd;
+  &quot;pricePlans&quot;: [&#xd;
+    {&#xd;
+      &quot;id&quot;: 0,&#xd;
+      &quot;appId&quot;: 1,&#xd;
+      &quot;createAt&quot;: &quot;2015-11-09T04:37:53.441Z&quot;,&#xd;
+      &quot;updateAt&quot;: &quot;2015-11-09T04:37:53.441Z&quot;,&#xd;
+      &quot;type&quot;: &quot;one_time&quot;,&#xd;
+      &quot;totalPrice&quot;: 0,&#xd;
+      &quot;unitPrice&quot;: 0,&#xd;
+      &quot;discount&quot;: 0,&#xd;
+      &quot;currency&quot;: &quot;USD&quot;&#xd;
+    }&#xd;
+  ]&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${app_id}</stringProp>
+              <stringProp name="HTTPSampler.method">PUT</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create a payload" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;lang&quot;: &quot;ja&quot;,&#xd;
+    &quot;os&quot;: &quot;mac&quot;,&#xd;
+    &quot;uuid&quot;: &quot;uuid&quot;,&#xd;
+    &quot;reviewStatus&quot;: &quot;draft&quot;,&#xd;
+    &quot;version&quot;: &quot;1.2.2&quot;,&#xd;
+    &quot;versionDescription&quot;: &quot;hehe&quot;,&#xd;
+    &quot;productCode&quot;: &quot;2bu49f&quot;,&#xd;
+    &quot;upgradeCode&quot;: &quot;)H(IH&quot;,&#xd;
+    &quot;url&quot;: &quot;baidu.com/123.tar&quot;,&#xd;
+    &quot;size&quot;: 123,&#xd;
+    &quot;mime&quot;: &quot;application/x-tar&quot;,&#xd;
+    &quot;mediaSetId&quot;: 0,&#xd;
+    &quot;mediaSet&quot;: [&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 1&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 1&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        },&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 2&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 2&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        }&#xd;
+&#xd;
+    ],&#xd;
+    &quot;title&quot;: &quot;日文App&quot;,&#xd;
+    &quot;shortDescription&quot;: &quot;&quot;,&#xd;
+    &quot;description&quot;: &quot;&quot;,&#xd;
+    &quot;instruction&quot;: &quot;&quot;,&#xd;
+    &quot;installation&quot;: &quot;&quot;,&#xd;
+    &quot;additionalInfo&quot;: &quot;&quot;,&#xd;
+    &quot;knownIssue&quot;: &quot;&quot;,&#xd;
+    &quot;supportInfo&quot;: &quot;&quot;&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/${app_id}/payloads</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="create another payload" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&#xd;
+    &quot;lang&quot;: &quot;en&quot;,&#xd;
+    &quot;os&quot;: &quot;win32&quot;,&#xd;
+    &quot;uuid&quot;: &quot;uuid&quot;,&#xd;
+    &quot;reviewStatus&quot;: &quot;draft&quot;,&#xd;
+    &quot;version&quot;: &quot;1.2.2&quot;,&#xd;
+    &quot;versionDescription&quot;: &quot;hehe&quot;,&#xd;
+    &quot;productCode&quot;: &quot;2bu49f&quot;,&#xd;
+    &quot;upgradeCode&quot;: &quot;)H(IH&quot;,&#xd;
+    &quot;url&quot;: &quot;baidu.com/123.tar&quot;,&#xd;
+    &quot;size&quot;: 123,&#xd;
+    &quot;mime&quot;: &quot;application/x-tar&quot;,&#xd;
+    &quot;mediaSetId&quot;: 0,&#xd;
+    &quot;mediaSet&quot;: [&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 1&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 1&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        },&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 2&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 2&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        }&#xd;
+&#xd;
+    ],&#xd;
+    &quot;title&quot;: &quot;日文App&quot;,&#xd;
+    &quot;shortDescription&quot;: &quot;&quot;,&#xd;
+    &quot;description&quot;: &quot;&quot;,&#xd;
+    &quot;instruction&quot;: &quot;&quot;,&#xd;
+    &quot;installation&quot;: &quot;&quot;,&#xd;
+    &quot;additionalInfo&quot;: &quot;&quot;,&#xd;
+    &quot;knownIssue&quot;: &quot;&quot;,&#xd;
+    &quot;supportInfo&quot;: &quot;&quot;&#xd;
+}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/${app_id}/payloads</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+            <boolProp name="LoopController.continue_forever">true</boolProp>
+            <stringProp name="LoopController.loops">3</stringProp>
+          </LoopController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="update a payload" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&#xd;
+    &quot;lang&quot;: &quot;en&quot;,&#xd;
+    &quot;os&quot;: &quot;win32&quot;,&#xd;
+    &quot;uuid&quot;: &quot;uuid&quot;,&#xd;
+    &quot;reviewStatus&quot;: &quot;draft&quot;,&#xd;
+    &quot;version&quot;: &quot;1.2.2.3&quot;,&#xd;
+    &quot;versionDescription&quot;: &quot;hehe&quot;,&#xd;
+    &quot;productCode&quot;: &quot;2bu49f&quot;,&#xd;
+    &quot;upgradeCode&quot;: &quot;)H(IH&quot;,&#xd;
+    &quot;url&quot;: &quot;baidu.com/123.tar&quot;,&#xd;
+    &quot;size&quot;: 123,&#xd;
+    &quot;mime&quot;: &quot;application/x-tar&quot;,&#xd;
+    &quot;mediaSetId&quot;: 0,&#xd;
+    &quot;mediaSet&quot;: [&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 1&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 1&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        },&#xd;
+        {&#xd;
+          &quot;id&quot;: 0,&#xd;
+          &quot;uri&quot;: &quot;baidu.com/123.jpg&quot;,&#xd;
+          &quot;size&quot;: 123,&#xd;
+          &quot;mime&quot;: &quot;image/jpeg&quot;,&#xd;
+          &quot;type&quot;: &quot;screenshot&quot;,&#xd;
+          &quot;value&quot;: &quot;whatever&quot;,&#xd;
+          &quot;shortDescription&quot;: &quot;Short descriptioin 2&quot;,&#xd;
+          &quot;description&quot;: &quot;Normal description 2&quot;,&#xd;
+          &quot;mediaSetId&quot;: 0&#xd;
+        }&#xd;
+&#xd;
+    ],&#xd;
+    &quot;title&quot;: &quot;日文App&quot;,&#xd;
+    &quot;shortDescription&quot;: &quot;&quot;,&#xd;
+    &quot;description&quot;: &quot;&quot;,&#xd;
+    &quot;instruction&quot;: &quot;&quot;,&#xd;
+    &quot;installation&quot;: &quot;&quot;,&#xd;
+    &quot;additionalInfo&quot;: &quot;&quot;,&#xd;
+    &quot;knownIssue&quot;: &quot;&quot;,&#xd;
+    &quot;supportInfo&quot;: &quot;&quot;&#xd;
+}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${app_id}/payloads/en/win32</stringProp>
+              <stringProp name="HTTPSampler.method">PUT</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="interval" enabled="true">
+              <stringProp name="ConstantTimer.delay">100</stringProp>
+            </ConstantTimer>
+            <hashTree/>
+          </hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="delete a payload" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value"></stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/${app_id}/payloads/en/win32</stringProp>
+            <stringProp name="HTTPSampler.method">DELETE</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="delete app" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/${app_id}</stringProp>
+            <stringProp name="HTTPSampler.method">DELETE</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="extract app id from result" enabled="true">
+              <stringProp name="VAR">app_id</stringProp>
+              <stringProp name="JSONPATH">id</stringProp>
+              <stringProp name="DEFAULT"></stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="interval" enabled="true">
+          <stringProp name="ConstantTimer.delay">300</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="Publisher Results" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Admin" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">3</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">30</stringProp>
+        <longProp name="ThreadGroup.start_time">1451447482000</longProp>
+        <longProp name="ThreadGroup.end_time">1451447482000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </LoopController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get an app" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/${random_app_id}</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="get id" enabled="true">
+              <boolProp name="resetInterpreter">false</boolProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="script">int max = bsh.shared.count;
+int index = Math.random() * max;
+String random_id = bsh.shared.allId.get(index);
+vars.put(&quot;random_app_id&quot;, random_id);</stringProp>
+            </BeanShellPreProcessor>
+            <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="extract lang" enabled="true">
+              <stringProp name="VAR">lang</stringProp>
+              <stringProp name="JSONPATH">payloads[0].lang</stringProp>
+              <stringProp name="DEFAULT"></stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+            <com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor guiclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.gui.JSONPathExtractorGui" testclass="com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor" testname="extract os" enabled="true">
+              <stringProp name="VAR">os</stringProp>
+              <stringProp name="JSONPATH">payloads[0].os</stringProp>
+              <stringProp name="DEFAULT"></stringProp>
+              <stringProp name="VARIABLE"></stringProp>
+              <stringProp name="SUBJECT">BODY</stringProp>
+            </com.atlantbh.jmeter.plugins.jsonutils.jsonpathextractor.JSONPathExtractor>
+            <hashTree/>
+          </hashTree>
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If app found" enabled="true">
+            <stringProp name="IfController.condition">${JMeterThread.last_sample_ok}</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+          </IfController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="unpublish an app" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${random_app_id}/payloads/${lang}/${os}?status=unpublished</stringProp>
+              <stringProp name="HTTPSampler.method">PUT</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="substatus of an app" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${random_app_id}/payloads/${lang}/${os}?status=${status}</stringProp>
+              <stringProp name="HTTPSampler.method">PUT</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree>
+              <BeanShellPreProcessor guiclass="TestBeanGUI" testclass="BeanShellPreProcessor" testname="get random substatus" enabled="true">
+                <boolProp name="resetInterpreter">false</boolProp>
+                <stringProp name="parameters"></stringProp>
+                <stringProp name="filename"></stringProp>
+                <stringProp name="script">String raw = &quot;draft,submission,resubmission,underReview,pending_approval,pendingResubmission&quot;;
+String[] all = raw.split(&quot;,&quot;);
+int idx = Math.random() * all.length;
+String status = all[idx];
+vars.put(&quot;status&quot;, status);</stringProp>
+              </BeanShellPreProcessor>
+              <hashTree/>
+            </hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="publish an app" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.domain"></stringProp>
+              <stringProp name="HTTPSampler.port"></stringProp>
+              <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+              <stringProp name="HTTPSampler.response_timeout"></stringProp>
+              <stringProp name="HTTPSampler.protocol"></stringProp>
+              <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+              <stringProp name="HTTPSampler.path">/apps/${random_app_id}/payloads/${lang}/${os}?status=live</stringProp>
+              <stringProp name="HTTPSampler.method">PUT</stringProp>
+              <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+              <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+              <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+              <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+              <boolProp name="HTTPSampler.monitor">false</boolProp>
+              <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="interval" enabled="true">
+          <stringProp name="ConstantTimer.delay">3000</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="Admin Results" enabled="false">
+          <boolProp name="ResultCollector.error_logging">true</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Misc" enabled="true">
+        <stringProp name="TestPlan.comments">Other api calls</stringProp>
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1458103076000</longProp>
+        <longProp name="ThreadGroup.end_time">1458103076000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <LoopController guiclass="LoopControlPanel" testclass="LoopController" testname="Get Settings" enabled="true">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <intProp name="LoopController.loops">-1</intProp>
+        </LoopController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get store settings" enabled="false">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/settings/stores</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get a app" enabled="false">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps/9111174692260234982</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="get 50 apps" enabled="false">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+              <collectionProp name="Arguments.arguments"/>
+            </elementProp>
+            <stringProp name="HTTPSampler.domain"></stringProp>
+            <stringProp name="HTTPSampler.port"></stringProp>
+            <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+            <stringProp name="HTTPSampler.response_timeout"></stringProp>
+            <stringProp name="HTTPSampler.protocol"></stringProp>
+            <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+            <stringProp name="HTTPSampler.path">/apps?live=true&amp;skip=0&amp;top=50</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+            <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+            <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+            <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+            <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+            <boolProp name="HTTPSampler.monitor">false</boolProp>
+            <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="interval" enabled="true">
+            <stringProp name="ConstantTimer.delay">1</stringProp>
+          </ConstantTimer>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="Overall Results" enabled="false">
+        <boolProp name="ResultCollector.error_logging">true</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>false</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename"></stringProp>
+        <boolProp name="useGroupName">true</boolProp>
+      </ResultCollector>
+      <hashTree/>
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Error Log" enabled="true">
+        <boolProp name="ResultCollector.error_logging">true</boolProp>
+        <objProp>
+          <name>saveConfig</name>
+          <value class="SampleSaveConfiguration">
+            <time>true</time>
+            <latency>true</latency>
+            <timestamp>true</timestamp>
+            <success>true</success>
+            <label>true</label>
+            <code>true</code>
+            <message>true</message>
+            <threadName>true</threadName>
+            <dataType>true</dataType>
+            <encoding>false</encoding>
+            <assertions>true</assertions>
+            <subresults>true</subresults>
+            <responseData>false</responseData>
+            <samplerData>false</samplerData>
+            <xml>false</xml>
+            <fieldNames>true</fieldNames>
+            <responseHeaders>false</responseHeaders>
+            <requestHeaders>false</requestHeaders>
+            <responseDataOnError>false</responseDataOnError>
+            <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+            <assertionsResultsToSave>0</assertionsResultsToSave>
+            <bytes>true</bytes>
+            <url>true</url>
+            <threadCounts>true</threadCounts>
+          </value>
+        </objProp>
+        <stringProp name="filename">C:\Users\xiuh\Desktop\log\error.csv</stringProp>
+        <boolProp name="useGroupName">true</boolProp>
+      </ResultCollector>
+      <hashTree/>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

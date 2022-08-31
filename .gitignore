@@ -1,0 +1,7 @@
+._.DS_Store
+logs
+target
+.idea
+.DS_Store
+*.log
+.metals

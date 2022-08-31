@@ -1,0 +1,6 @@
+1. Run "sudo bash" to enter root mode bash
+2. Run "crontab -e' in CentOS
+3. Add a new line "*/10 * * * * /home/ec2-user/deploy/deploy.sh" for running the deploy script every 10 minutes
+4. Run "service crond restart" to reload the configuration
+5. Check the /var/log/cron to see if the task runs
+Done

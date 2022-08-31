@@ -1,0 +1,53 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Home page
+POST          /test                             com.acrd.giraffe.controllers.Application.test
+
+# Health page
+GET           /                                 com.acrd.giraffe.controllers.Health.index
+GET           /health                           com.acrd.giraffe.controllers.Health.index
+
+# Authentication
+GET           /login                            com.acrd.giraffe.controllers.Authenticate.login
+
+# Site Settings
+GET           /settings                         com.acrd.giraffe.controllers.Settings.getAll(compact: Option[Boolean])
+GET           /settings/:name                   com.acrd.giraffe.controllers.Settings.get(name: String, recursively: Option[Boolean])
+POST          /settings                         com.acrd.giraffe.controllers.Settings.create
+PUT           /settings/:name                   com.acrd.giraffe.controllers.Settings.update(name: String)
+DELETE        /settings/:name                   com.acrd.giraffe.controllers.Settings.delete(name: String)
+
+## App Data
+GET           /apps                             com.acrd.giraffe.controllers.Apps.get(skip: Option[Int], top: Option[Int], orderBy: Option[String], ascending: Option[Boolean], filter: Option[String], live: Option[Boolean])
+GET           /apps/:id                         com.acrd.giraffe.controllers.Apps.getById(id: Long, live: Option[Boolean])
+GET           /apps/:id/actionLog               com.acrd.giraffe.controllers.ActionLogs.getByParentId(id: Long)
+POST          /apps/:id/actionLog               com.acrd.giraffe.controllers.ActionLogs.insertAppLog(id: Long)
+POST          /apps                             com.acrd.giraffe.controllers.Apps.createApp
+PUT           /apps/:id                         com.acrd.giraffe.controllers.Apps.updateApp(id: Long)
+DELETE        /apps/:id                         com.acrd.giraffe.controllers.Apps.deleteApp(id: Long)
+POST          /apps/:id/payloads                com.acrd.giraffe.controllers.Apps.createPayload(id: Long)
+PUT           /apps/:id/payloads/:lang/:os      com.acrd.giraffe.controllers.Apps.updatePayload(id: Long, lang: String, os: String, status: Option[String])
+DELETE        /apps/:id/payloads/:lang/:os      com.acrd.giraffe.controllers.Apps.deletePayload(id: Long, lang: String, os: String)
+POST          /apps/:id/facets                  com.acrd.giraffe.controllers.Facets.create(id: Long, name: Option[String], value: Option[String])
+DELETE        /apps/:id/facets                  com.acrd.giraffe.controllers.Facets.delete(id: Long, name: Option[String], value: Option[String])
+GET           /apps/:id/payloadHistory          com.acrd.giraffe.controllers.Apps.getPayloadHistory(id: Long)
+GET           /apps/code/:code                  com.acrd.giraffe.controllers.Apps.getByCode(code: String)
+
+
+# Comments
+GET           /comments                         com.acrd.giraffe.controllers.Comments.get(id: Option[Long], appId: Option[Long], replyTo: Option[Long], status: Option[String], author: Option[String], store: Option[String], lang: Option[String], skip: Option[Int], top: Option[Int])
+GET           /comments/:id                     com.acrd.giraffe.controllers.Comments.getById(id: Long)
+GET           /comments/:id/actionLog           com.acrd.giraffe.controllers.ActionLogs.getByParentId(id: Long)
+POST          /comments/:id/actionLog           com.acrd.giraffe.controllers.ActionLogs.insertCommentLog(id: Long)
+POST          /comments                         com.acrd.giraffe.controllers.Comments.insert
+PUT           /comments/:id                     com.acrd.giraffe.controllers.Comments.update(id: Long)
+DELETE        /comments/:id                     com.acrd.giraffe.controllers.Comments.delete(id: Long)
+
+# For migration tasks (Deprecated !!!)
+POST          /migration/apps                   com.acrd.giraffe.controllers.Migration.insertApp(live: Option[Boolean])
+PUT           /migration/apps/:id               com.acrd.giraffe.controllers.Migration.updateApp(id: Long)
+POST          /migration/rating                 com.acrd.giraffe.controllers.Migration.migrateRating
+POST          /migration/comment                com.acrd.giraffe.controllers.Migration.migrateComment
+GET           /migration/howManyIdDoYouWant     com.acrd.giraffe.controllers.Migration.howManyIdDoYouWant
